@@ -24,13 +24,19 @@ dates = list(tsd.keys())
 latest_interval = dates[0] # pulling the most recent day from list, assuming latest day is first
 
 latest_closing_price = tsd[latest_interval]["4. close"]
-#finding recent high
+#finding recent high/low
 high_prices = [] #getting high price for each interval
+low_prices = []
 for date in dates:
     high_price = tsd[date]["2. high"]
     high_prices.append(float(high_price))
+    low_price = tsd[date]["3. low"]
+    low_prices.append(float(low_price))
 
 recent_high = max(high_prices)
+recent_low = min(low_prices)
+
+#finding recent low 
 
 #breakpoint()
 
@@ -47,7 +53,7 @@ print("-------------------------")
 print(f"LATEST TIME:  {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_closing_price))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
-print("RECENT LOW: $99,000.00")
+print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
 print("RECOMMENDATION: BUY!")
 print("RECOMMENDATION REASON: TODO")
