@@ -1,15 +1,22 @@
+# a rule to decide whether to buy or sell
+
 import json
 import requests
 import os
 import csv
-from dotenv import load_dotenv
+import time
+#from dotenv import load_dotenv
 #load_dotenv()
 
 #converting numbers into price (used in previous projects)
 def to_usd(my_price):
     return f"${my_price:,.2f}" 
 
-ticker = "MSFT"
+ticker = input("Please select a stock ticker: ")
+if len(ticker) > 5: 
+    print("Sorry, this is not a valid ticker, sorry.")
+    quit()
+
 api_key=os.environ.get("ALPHAVANTAGE_API_KEY")
 request_url= f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={ticker}&interval=5min&apikey={api_key}"
 response = requests.get(request_url)
@@ -38,6 +45,20 @@ for date in dates:
 recent_high = max(high_prices)
 recent_low = min(low_prices)
 
+recommendation = ""
+recommendation_justification = ""
+
+risk_tolerance = float(input("Please provide intra-day volatility tolerance (number will be converted to %)"))
+
+risk_percentage = float(risk_tolerance / 100)
+if(float(recent_high) - float(recent_low)) / float(recent_low) > float(risk_percentage):
+    recommendation = "NO BUY"
+    recommendation_justification = "This security is too volatile given your risk tolerance"
+else:
+    recommendation = "BUY"
+    recommendation_justification = "This security falls within your risk tolerance"
+
+
 #CSV file setup
 csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv") 
 
@@ -58,23 +79,23 @@ with open(csv_file_path, "w") as csv_file: # "w" means "open the file for writin
         })
 
 
+#getting current date/time for line
+request_date = time.strftime("%m/%d/%Y %I:%M %p")
 
-
-
-
+#output
 print("-------------------------")
 print("SELECTED SYMBOL: XYZ")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm") #find current date / when request was made using date/time module
+print(f"REQUEST AT: {request_date}") 
 print("-------------------------")
 print(f"LATEST TIME:  {last_refreshed}")
 print(f"LATEST CLOSE: {to_usd(float(latest_closing_price))}")
 print(f"RECENT HIGH: {to_usd(float(recent_high))}")
 print(f"RECENT LOW: {to_usd(float(recent_low))}")
 print("-------------------------")
-print("RECOMMENDATION: BUY!")
-print("RECOMMENDATION REASON: TODO")
+print(f"RECOMMENDATION: {recommendation}")
+print(f"RECOMMENDATION REASON: {recommendation_justification}")
 print("-------------------------")
 print("WRITING DATA TO CSV...")
 print("-------------------------")
