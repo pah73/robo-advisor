@@ -8,6 +8,7 @@ import time
 #from dotenv import load_dotenv
 #load_dotenv()
 
+
 #converting numbers into price (used in previous projects)
 def to_usd(my_price):
     return f"${my_price:,.2f}" 
